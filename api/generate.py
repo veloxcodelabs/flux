@@ -41,7 +41,7 @@ class handler(BaseHTTPRequestHandler):
             hf_token = os.environ.get("HF_TOKEN")
 
             # 👇 FIXED: Changed argument from hf_token to token
-            client = Client("black-forest-labs/FLUX.2-dev", token=hf_token)
+            client = Client("black-forest-labs/FLUX.2-klein-4B", token=hf_token)
             
             result = client.predict(
                 prompt=prompt,
