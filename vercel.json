@@ -1,8 +1,6 @@
 {
   "version": 2,
-  "cleanUrls": true,
   "rewrites": [
-    { "source": "/api/generate", "destination": "/api/generate.py" },
-    { "source": "/(.*)", "destination": "/public/$1" }
+    { "source": "/api/generate", "destination": "/api/generate.py" }
   ]
 }
