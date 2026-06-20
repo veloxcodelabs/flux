@@ -1,2 +1,11 @@
+[project]
+name = "flux-app"
+version = "0.1.0"
+description = "Flux Image Generator on Vercel"
+requires-python = ">=3.9"
+dependencies = [
+    "gradio_client",
+]
+
 [tool.vercel]
 entrypoint = "api.generate:handler"
