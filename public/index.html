@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLUX.1-dev Image Generator</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #121212; color: #fff; max-width: 600px; margin: 40px auto; padding: 20px; text-align: center; }
+        textarea { width: 100%; height: 100px; background: #222; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        button { background: #ff4757; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 15px; width: 100%; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        #resultContainer { margin-top: 30px; min-height: 200px; display: flex; align-items: center; justify-content: center; border: 2px dashed #333; border-radius: 8px; }
+        img { max-width: 100%; border-radius: 8px; display: none; }
+        .spinner { display: none; border: 4px solid rgba(255,255,255,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #ff4757; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <h1>FLUX Image Generator</h1>
+    <p>Powered by black-forest-labs/FLUX.1-dev</p>
+
+    <textarea id="promptInput" placeholder="Describe the image you want to generate..."></textarea>
+    <button id="generateBtn" onclick="generateImage()">Generate Image</button>
+
+    <div id="resultContainer">
+        <div id="loadingSpinner" class="spinner"></div>
+        <img id="outputImage" alt="Generated AI artwork">
+        <p id="statusText">Your masterpiece will appear here</p>
+    </div>
+
+    <script>
+        async function generateImage() {
+            const prompt = document.getElementById('promptInput').value;
+            const btn = document.getElementById('generateBtn');
+            const spinner = document.getElementById('loadingSpinner');
+            const img = document.getElementById('outputImage');
+            const status = document.getElementById('statusText');
+
+            if(!prompt.trim()) return alert("Please enter a prompt first!");
+
+            // UI State Change
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            img.style.display = 'none';
+            status.innerText = "Generating image (takes ~20-30 seconds)...";
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                
+                const result = await response.json();
+
+                if (result.success && result.image_url) {
+                    img.src = result.image_url;
+                    img.style.display = 'block';
+                    status.style.display = 'none';
+                } else {
+                    status.innerText = "Failed to generate image: " + (result.error || "Unknown Error");
+                }
+            } catch (error) {
+                status.innerText = "Error connecting to server.";
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
