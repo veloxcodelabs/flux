@@ -29,24 +29,19 @@ class handler(BaseHTTPRequestHandler):
         temp_file_path = None
 
         try:
-            # Check if an image payload was sent
             if base64_image:
-                # Decode image and store temporarily for Gradio handle_file interface
                 image_data = base64.b64decode(base64_image)
                 temp_dir = tempfile.gettempdir()
                 temp_file_path = os.path.join(temp_dir, filename)
                 with open(temp_file_path, "wb") as f:
                     f.write(image_data)
                 
-                # Format payload according to the spec seen in your API doc text
                 input_images_payload = [{"image": handle_file(temp_file_path), "caption": None}]
 
-            # 👇 FIXED: Grab your HF_TOKEN from Vercel's environment variables 
-            # to authenticate your ZeroGPU request quota
             hf_token = os.environ.get("HF_TOKEN")
 
-            # Target the correct FLUX.2 endpoint block using your token
-           client = Client("black-forest-labs/FLUX.2-dev", token=hf_token)
+            # 👇 FIXED: Changed argument from hf_token to token
+            client = Client("black-forest-labs/FLUX.2-dev", token=hf_token)
             
             result = client.predict(
                 prompt=prompt,
@@ -55,8 +50,8 @@ class handler(BaseHTTPRequestHandler):
                 randomize_seed=True,
                 width=1024,
                 height=1024,
-                num_inference_steps=30, # Match the spec recommendation
-                guidance_scale=4,      # Match the spec recommendation
+                num_inference_steps=30, 
+                guidance_scale=4,      
                 prompt_upsampling=True,
                 api_name="/infer"          
             )
@@ -78,7 +73,6 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
             
         finally:
-            # Cleanup local storage artifacts
             if temp_file_path and os.path.exists(temp_file_path):
                 try:
                     os.remove(temp_file_path)
