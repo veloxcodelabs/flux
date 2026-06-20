@@ -41,8 +41,12 @@ class handler(BaseHTTPRequestHandler):
                 # Format payload according to the spec seen in your API doc text
                 input_images_payload = [{"image": handle_file(temp_file_path), "caption": None}]
 
-            # Target the correct FLUX.2 endpoint block
-            client = Client("black-forest-labs/FLUX.2-dev")
+            # 👇 FIXED: Grab your HF_TOKEN from Vercel's environment variables 
+            # to authenticate your ZeroGPU request quota
+            hf_token = os.environ.get("HF_TOKEN")
+
+            # Target the correct FLUX.2 endpoint block using your token
+            client = Client("black-forest-labs/FLUX.2-dev", hf_token=hf_token)
             
             result = client.predict(
                 prompt=prompt,
