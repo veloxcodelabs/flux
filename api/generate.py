@@ -46,7 +46,7 @@ class handler(BaseHTTPRequestHandler):
             hf_token = os.environ.get("HF_TOKEN")
 
             # Target the correct FLUX.2 endpoint block using your token
-            client = Client("black-forest-labs/FLUX.2-dev", hf_token=hf_token)
+           client = Client("black-forest-labs/FLUX.2-dev", token=hf_token)
             
             result = client.predict(
                 prompt=prompt,
