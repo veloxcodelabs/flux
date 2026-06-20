@@ -12,7 +12,7 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         response = {
             "status": "online", 
-            "message": "The Flux 2 API endpoint is configured! Send a POST request with parameters."
+            "message": "The Flux API endpoint is configured! Send a POST request with parameters."
         }
         self.wfile.write(json.dumps(response).encode('utf-8'))
 
@@ -40,8 +40,8 @@ class handler(BaseHTTPRequestHandler):
 
             hf_token = os.environ.get("HF_TOKEN")
 
-            # 👇 FIXED: Changed argument from hf_token to token
-            client = Client("black-forest-labs/FLUX.2-klein-4B", token=hf_token)
+            # 👇 CHANGED: Switched endpoint space to FLUX.1-schnell
+            client = Client("black-forest-labs/FLUX.1-schnell", token=hf_token)
             
             result = client.predict(
                 prompt=prompt,
@@ -50,8 +50,7 @@ class handler(BaseHTTPRequestHandler):
                 randomize_seed=True,
                 width=1024,
                 height=1024,
-                num_inference_steps=30, 
-                guidance_scale=4,      
+                num_inference_steps=4, # 👈 CHANGED: Schnell runs in 4 fast steps max
                 prompt_upsampling=True,
                 api_name="/infer"          
             )
